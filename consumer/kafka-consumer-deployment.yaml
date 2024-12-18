@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-consumer
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-consumer
+    spec:
+      containers:
+      - name: kafka-consumer
+        image: gcr.io/tddevops/kafka-consumer-image:latest
+        command: ["python3", "kafka_consumer.py"]  # Commande pour exécuter le consumer
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/secret/service-account.json"  # Chemin vers la clé du service BigQuery dans le container
+        - name: BOOTSTRAP_SERVERS
+          value: "kafka-broker-service:9092"  # Nom du service Kafka dans le cluster
+        - name: GROUP_ID
+          value: "bigquery-consumer-group"
+        - name: TOPIC
+          value: "posts"  # Remplace par ton topic Kafka
+        volumeMounts:
+        - name: bigquery-secret
+          mountPath: /secret  # Montez les credentials BigQuery sous /secrets
+          readOnly: true
+      volumes:
+      - name: bigquery-secret
+        secret:
+          secretName: bigquery-service-account-secret  # Référence au secret Kubernetes contenant la clé
+      imagePullSecrets:
+      - name: gcr-secret

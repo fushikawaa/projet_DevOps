@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-consumer-config
+  namespace: default
+data:
+  kafka.bootstrap.servers: "kafka-broker-service:9092"  # Adresse du broker Kafka
+  kafka.group.id: "bigquery-consumer-group"
+  kafka.auto.offset.reset: "earliest"

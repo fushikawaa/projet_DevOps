@@ -1,0 +1,4 @@
+*service-account.json
+airflow/dags/*.py
+correction*.md
+*service-account-secret.yaml
